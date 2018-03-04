@@ -1,5 +1,6 @@
 # sensorio-weather-station
 Use the DHT22 and the DS18B20 sensor to get some weather informations and send it to an hub.
+(You can also only use the DHT11 if you want to measure the temperature inside).
 
 To use this code you need to install the following libraries:
 * [DHT sensor library](https://github.com/adafruit/DHT-sensor-library)

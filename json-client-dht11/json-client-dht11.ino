@@ -1,15 +1,8 @@
 #include "DHT.h"
 #define DHTPIN 13
-#define DHTTYPE DHT22
+#define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
-
-#include <OneWire.h> 
-#include <DallasTemperature.h>
-#define ONE_WIRE_BUS 12 
-
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire);
 
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
@@ -22,7 +15,6 @@ void setup()
 {
   WiFi.begin(ssid, password);
   dht.begin();
-  sensors.begin(); 
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(1000);
@@ -48,11 +40,7 @@ void loop() {
       char hicB[6];
       dtostrf(hic, 4, 2, hicB);
 
-      sensors.requestTemperatures();
-      char t2[6];
-      dtostrf(sensors.getTempCByIndex(0), 4, 2, t2);
-
-      snprintf(params, 100, "humidity=%s&temperature=%s&heat_index=%s&temperature2=%s", hB, tB, hicB, t2);
+      snprintf(params, 100, "humidity=%s&temperature=%s&heat_index=%s&temperature2=false", hB, tB, hicB);
 
       HTTPClient http;
       http.begin("http://192.168.0.47:8887/api/weather-data/"); // specifie the address
