@@ -20,13 +20,17 @@ const char *password = "wifi_pwd";
 
 void setup()
 {
+  pinMode(2, OUTPUT); 
   WiFi.begin(ssid, password);
   dht.begin();
   sensors.begin(); 
+  
+  digitalWrite(2, LOW);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(1000);
   }
+  digitalWrite(2, HIGH); 
   WiFi.mode(WIFI_STA);
 }
 
@@ -55,11 +59,24 @@ void loop() {
       snprintf(params, 100, "humidity=%s&temperature=%s&heat_index=%s&temperature2=%s", hB, tB, hicB, t2);
 
       HTTPClient http;
-      http.begin("http://192.168.0.47:8887/api/weather-data/"); // specifie the address
+      http.begin("http://192.168.0.40:8888/api/weather-data/"); // specifie the address
+      http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+      http.POST(params);    
+      http.end();
+    } else {
+
+      sensors.requestTemperatures();
+      char t2[6];
+      dtostrf(sensors.getTempCByIndex(0), 4, 2, t2);
+
+      snprintf(params, 100, "humidity=0&temperature=%s&heat_index=%s", t2, t2);
+
+      HTTPClient http;
+      http.begin("http://192.168.0.40:8888/api/weather-data/"); // specifie the address
       http.addHeader("Content-Type", "application/x-www-form-urlencoded");
       http.POST(params);    
       http.end();
     }
   }
-  ESP.deepSleep(120000000); 
+  ESP.deepSleep(900000000); 
 }
